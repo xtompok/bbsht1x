@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = 'rpiSht1x',
-    version = '1.0',
+    version = '1.1',
     author = 'Luca Nobili',
     author_email = 'lunobiliAT_MARKyahooDOTit',
     packages = find_packages(),

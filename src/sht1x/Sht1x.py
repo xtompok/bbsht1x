@@ -75,7 +75,7 @@ class Sht1x(object):
     def read_humidity(self):
 #        Get current temperature for humidity correction
         temperature = self.read_temperature_C()
-        return self.read_umidity(temperature)
+        return self._read_humidity(temperature)
     
     def _read_humidity(self, temperature):
         humidityCommand = 0b00000101
@@ -193,22 +193,22 @@ class Sht1x(object):
 
 class WaitingSht1x(Sht1x):
     def __init__(self, dataPin, sckPin):
-        super().__init__(dataPin, sckPin)
+        super(WaitingSht1x, self).__init__(dataPin, sckPin)
         self.__lastInvocationTime = 0
 
     def read_temperature_C(self):
         self.__wait()        
-        return super().read_temperature_C()
+        return super(WaitingSht1x, self).read_temperature_C()
     
     def read_humidity(self):
         temperature = self.read_temperature_C()
         self.__wait()
-        return super()._read_humidity(temperature)
+        return super(WaitingSht1x, self)._read_humidity(temperature)
     
     def read_temperature_and_Humidity(self):
         temperature = self.read_temperature_C()
         self.__wait()
-        humidity = super()._read_humidity(temperature)
+        humidity = super(WaitingSht1x, self)._read_humidity(temperature)
         return (temperature, humidity)
             
     def __wait(self):
