@@ -25,6 +25,7 @@ import traceback
 import sys
 import time
 import logging
+import math
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -45,9 +46,9 @@ GPIO.setmode(GPIO.BOARD)
 D1 = -40.0  # for 14 Bit @ 5V
 D2 =  0.01 # for 14 Bit DEGC
 
-C1 = -4.0       # for 12 Bit
-C2 =  0.0405    # for 12 Bit
-C3 = -0.0000028 # for 12 Bit
+C1 = -2.0468       # for 12 Bit
+C2 =  0.0367       # for 12 Bit
+C3 = -0.0000015955 # for 12 Bit
 T1 =  0.01      # for 14 Bit @ 5V
 T2 =  0.00008   # for 14 Bit @ 5V
     
@@ -72,6 +73,11 @@ class Sht1x(object):
         
 
     def read_humidity(self):
+#        Get current temperature for humidity correction
+        temperature = self.read_temperature_C()
+        return self.read_umidity(temperature)
+    
+    def _read_humidity(self, temperature):
         humidityCommand = 0b00000101
         self.__sendCommand(humidityCommand)
         self.__waitForResult()
@@ -80,11 +86,18 @@ class Sht1x(object):
         GPIO.cleanup()
 #        Apply linear conversion to raw value
         linearHumidity = C1 + C2 * rawHumidity + C3 * rawHumidity * rawHumidity
-#        Get current temperature for humidity correction
-        temperature = self.read_temperature_C()
 #        Correct humidity value for current temperature
         return (temperature - 25.0 ) * (T1 + T2 * rawHumidity) + linearHumidity            
-    
+
+    def calculate_dew_point(self, temperature, humidity):
+        if temperature > 0:
+            tn = 243.12
+            m = 17.62
+        else:
+            tn = 272.62
+            m = 22.46
+        return tn * (math.log(humidity / 100) + (m * temperature) / (tn + temperature)) / (m - math.log(humidity / 100) - m * temperature / (tn + temperature))
+
     def __sendCommand(self, command):
         #Transmission start
         GPIO.setup(self.dataPin, GPIO.OUT)
@@ -177,15 +190,41 @@ class Sht1x(object):
         for i in range(10):
             self.__clockTick(GPIO.HIGH)
             self.__clockTick(GPIO.LOW)
+
+class WaitingSht1x(Sht1x):
+    def __init__(self, dataPin, sckPin):
+        super().__init__(dataPin, sckPin)
+        self.__lastInvocationTime = 0
+
+    def read_temperature_C(self):
+        self.__wait()        
+        return super().read_temperature_C()
+    
+    def read_humidity(self):
+        temperature = self.read_temperature_C()
+        self.__wait()
+        return super()._read_humidity(temperature)
+    
+    def read_temperature_and_Humidity(self):
+        temperature = self.read_temperature_C()
+        self.__wait()
+        humidity = super()._read_humidity(temperature)
+        return (temperature, humidity)
             
+    def __wait(self):
+        lastInvocationDelta = time.time() - self.__lastInvocationTime
+#        if we queried the sensor less then a second ago, wait until a second is passed
+        if lastInvocationDelta < 1:
+            time.sleep(1 - lastInvocationDelta)
+        self.__lastInvocationTime = time.time()
+        
 def main():
-    sht1x = Sht1x(11, 7)
+    sht1x = WaitingSht1x(11, 7)
     print(sht1x.read_temperature_C())
     print(sht1x.read_humidity())
+    aTouple = sht1x.read_temperature_and_Humidity()
+    print("Temperature: {} Humidity: {}".format(aTouple[0], aTouple[1]))
+    print(sht1x.calculate_dew_point(20, 50))
     
 if __name__ == '__main__':
-#    logging.basicConfig(filename=os.path.os.path.expanduser("~/Sht1x.log"), 
-#                    level=logging.DEBUG)
-
-
     main()
