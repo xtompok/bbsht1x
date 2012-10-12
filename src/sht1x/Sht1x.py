@@ -33,10 +33,10 @@ logger = logging.getLogger(__name__)
 try:
     import RPi.GPIO as GPIO
 except ImportError:
-    logger.warning("Could not import the raspberry-gpio-python package (http://code.google.com/p/raspberry-gpio-python/). Using a mock instead. Notice that this is useful only for the purpose of debugging this module, but will not give the end user any useful result.")
+    logger.warning("Could not import the RPi.GPIO package (http://pypi.python.org/pypi/RPi.GPIO). Using a mock instead. Notice that this is useful only for the purpose of debugging this module, but will not give the end user any useful result.")
     import RPiMock.GPIO as GPIO
 except:
-    logger.warning("Could not import the raspberry-gpio-python package (http://code.google.com/p/raspberry-gpio-python/). Using a mock instead. Notice that this is useful only for the purpose of debugging this module, but will not give the end user any useful result.")
+    logger.warning("Could not import the RPi.GPIO package (http://pypi.python.org/pypi/RPi.GPIO). Using a mock instead. Notice that this is useful only for the purpose of debugging this module, but will not give the end user any useful result.")
     import RPiMock.GPIO as GPIO
     traceback.print_exc(file=sys.stdout)
 
