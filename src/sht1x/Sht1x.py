@@ -96,7 +96,7 @@ class Sht1x(object):
         else:
             tn = 272.62
             m = 22.46
-        return tn * (math.log(humidity / 100) + (m * temperature) / (tn + temperature)) / (m - math.log(humidity / 100) - m * temperature / (tn + temperature))
+        return tn * (math.log(humidity / 100.0) + (m * temperature) / (tn + temperature)) / (m - math.log(humidity / 100.0) - m * temperature / (tn + temperature))
 
     def __sendCommand(self, command):
         #Transmission start
