@@ -39,8 +39,6 @@ except:
     logger.warning("Could not import the RPi.GPIO package (http://pypi.python.org/pypi/RPi.GPIO). Using a mock instead. Notice that this is useful only for the purpose of debugging this module, but will not give the end user any useful result.")
     import RPiMock.GPIO as GPIO
     traceback.print_exc(file=sys.stdout)
-
-GPIO.setmode(GPIO.BOARD)
  
 #   Conversion coefficients from SHT15 datasheet
 D1 = -40.0  # for 14 Bit @ 5V
@@ -53,9 +51,13 @@ T1 =  0.01      # for 14 Bit @ 5V
 T2 =  0.00008   # for 14 Bit @ 5V
     
 class Sht1x(object):
-    def __init__(self, dataPin, sckPin):
+    GPIO_BOARD = GPIO.BOARD
+    GPIO_BCM = GPIO.BCM
+
+    def __init__(self, dataPin, sckPin, gpioMode = GPIO_BOARD):
         self.dataPin = dataPin
         self.sckPin = sckPin
+        GPIO.setmode(gpioMode)
         
 #    I deliberately will not implement read_temperature_F because I believe in the
 #    in the Metric System (http://en.wikipedia.org/wiki/Metric_system)
