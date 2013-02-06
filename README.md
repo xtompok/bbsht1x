@@ -1,4 +1,3 @@
-========
 rpiSht1x
 ========
 This module reads Humidity and Temperature from a Sensirion SHT1x sensor. It has been tested
