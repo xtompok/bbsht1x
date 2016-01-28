@@ -26,5 +26,5 @@ def output(pinName, value):
     else:
         print("{}: Off".format(pinName))
 
-def cleanup():
+def cleanup(something):
     pass

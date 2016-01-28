@@ -70,7 +70,7 @@ class Sht1x(object):
         self.__waitForResult()
         rawTemperature = self.__getData16Bit()
         self.__skipCrc()
-        GPIO.cleanup()
+        GPIO.cleanup([self.dataPin, self.sckPin])
 
         return rawTemperature * D2 + D1
 
@@ -82,14 +82,14 @@ class Sht1x(object):
         temperature = self.read_temperature_C()
         humidity = self._read_humidity(temperature)
         return temperature, humidity
-    
+
     def _read_humidity(self, temperature):
         humidityCommand = 0b00000101
         self.__sendCommand(humidityCommand)
         self.__waitForResult()
         rawHumidity = self.__getData16Bit()
         self.__skipCrc()
-        GPIO.cleanup()
+        GPIO.cleanup([self.dataPin, self.sckPin])
 #        Apply linear conversion to raw value
         linearHumidity = C1 + C2 * rawHumidity + C3 * rawHumidity * rawHumidity
 #        Correct humidity value for current temperature
@@ -198,6 +198,11 @@ class Sht1x(object):
             self.__clockTick(GPIO.HIGH)
             self.__clockTick(GPIO.LOW)
 
+# The waiting version is supposed to cater for this part of the data sheet:
+# Important: To keep self heating below 0.1 degree C, SHT1x
+# should not be active for more than 10% of the time - e.g.
+# maximum one measurement per second at 12bit accuracy
+# shall be made.
 class WaitingSht1x(Sht1x):
     def __init__(self, dataPin, sckPin):
         super(WaitingSht1x, self).__init__(dataPin, sckPin)
