@@ -66,7 +66,6 @@ class Sht1x(object):
     def read_temperature_C(self):
         temperatureCommand = 0b00000011
 
-        GPIO.setmode(self.gpioMode)
         self.__sendCommand(temperatureCommand)
         self.__waitForResult()
         rawTemperature = self.__getData16Bit()
@@ -85,7 +84,6 @@ class Sht1x(object):
         return temperature, humidity
     
     def _read_humidity(self, temperature):
-        GPIO.setmode(self.gpioMode)
         humidityCommand = 0b00000101
         self.__sendCommand(humidityCommand)
         self.__waitForResult()
@@ -106,9 +104,9 @@ class Sht1x(object):
             m = 22.46
         return tn * (math.log(humidity / 100.0) + (m * temperature) / (tn + temperature)) / (m - math.log(humidity / 100.0) - m * temperature / (tn + temperature))
 
-    def __sendCommand(self, command, gpioMode = GPIO_BOARD):
+    def __sendCommand(self, command):
         #Transmission start
-        GPIO.setmode(gpioMode)
+        GPIO.setmode(self.gpioMode)
         GPIO.setup(self.dataPin, GPIO.OUT)
         GPIO.setup(self.sckPin, GPIO.OUT)
                 
