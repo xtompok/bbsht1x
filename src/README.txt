@@ -26,10 +26,14 @@ Example Usage::
 Release Notes
 =============
 
+* v1.3, 28/01/2016 -- Fixing the fact that from version 0.5.11 GPIO.cleanaup() unsets the current pin mode.
+  Cleaning up only the pins that have been set. Cleanup disutils use. Thanks to Andreas Würl and Andrew Lewis for
+  committing code and giving suggestions.
+
 * v1.2, 31/12/2012 -- Added the possibility to define the GPIO mode (GPIO_BOARD or GPIO_BCM) in the constructor.
   This is to make sure that this library plays nicely with other libraries that might rely on a specific mode.
   If no mode is provided, the constructor will default to the GPIO_BOARD mode.
-  Thanks to Daniël van Eeden for suggestiong this improvement.
+  Thanks to Daniël van Eeden for suggesting this improvement.
 
 * v1.1, 26/10/2012 -- Added WaitingSht1x, dew point calculation and using v4 constants.
   WaitingSht1x makes sure that no more than a query per second is performed on the sensor. This is
