@@ -100,8 +100,9 @@ class Sht1x(object):
             m = 22.46
         return tn * (math.log(humidity / 100.0) + (m * temperature) / (tn + temperature)) / (m - math.log(humidity / 100.0) - m * temperature / (tn + temperature))
 
-    def __sendCommand(self, command):
+    def __sendCommand(self, command, gpioMode = GPIO_BOARD):
         #Transmission start
+        GPIO.setmode(gpioMode)
         GPIO.setup(self.dataPin, GPIO.OUT)
         GPIO.setup(self.sckPin, GPIO.OUT)
                 
