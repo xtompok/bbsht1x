@@ -49,7 +49,8 @@ C2 =  0.0367       # for 12 Bit
 C3 = -0.0000015955 # for 12 Bit
 T1 =  0.01      # for 14 Bit @ 5V
 T2 =  0.00008   # for 14 Bit @ 5V
-    
+
+
 class Sht1x(object):
     GPIO_BOARD = GPIO.BOARD
     GPIO_BCM = GPIO.BCM
@@ -57,14 +58,15 @@ class Sht1x(object):
     def __init__(self, dataPin, sckPin, gpioMode = GPIO_BOARD):
         self.dataPin = dataPin
         self.sckPin = sckPin
-        GPIO.setmode(gpioMode)
-        
+        self.gpioMode = gpioMode
+
 #    I deliberately will not implement read_temperature_F because I believe in the
 #    in the Metric System (http://en.wikipedia.org/wiki/Metric_system)
 
     def read_temperature_C(self):
         temperatureCommand = 0b00000011
 
+        GPIO.setmode(self.gpioMode)
         self.__sendCommand(temperatureCommand)
         self.__waitForResult()
         rawTemperature = self.__getData16Bit()
@@ -72,14 +74,18 @@ class Sht1x(object):
         GPIO.cleanup()
 
         return rawTemperature * D2 + D1
-        
 
     def read_humidity(self):
-#        Get current temperature for humidity correction
+        return self.read_temperature_C_and_humidity()[1]
+
+    def read_temperature_C_and_humidity(self):
+        # get current temperature for humidity correction
         temperature = self.read_temperature_C()
-        return self._read_humidity(temperature)
+        humidity = self._read_humidity(temperature)
+        return temperature, humidity
     
     def _read_humidity(self, temperature):
+        GPIO.setmode(self.gpioMode)
         humidityCommand = 0b00000101
         self.__sendCommand(humidityCommand)
         self.__waitForResult()
