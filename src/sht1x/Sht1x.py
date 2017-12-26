@@ -31,14 +31,14 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 try:
-    import RPi.GPIO as GPIO
+    import Adafruit_BBIO.GPIO as GPIO
 except ImportError:
-    logger.warning("Could not import the RPi.GPIO package (http://pypi.python.org/pypi/RPi.GPIO). Using a mock instead. Notice that this is useful only for the purpose of debugging this module, but will not give the end user any useful result.")
-    import RPiMock.GPIO as GPIO
+    logger.error("Could not import the Adafruit_BBIO.GPIO package. Exitting...")
+    sys.exit(1)
 except:
-    logger.warning("Could not import the RPi.GPIO package (http://pypi.python.org/pypi/RPi.GPIO). Using a mock instead. Notice that this is useful only for the purpose of debugging this module, but will not give the end user any useful result.")
-    import RPiMock.GPIO as GPIO
+    logger.error("Could not import the Adafruit_BBIO.GPIO package. Exitting...")
     traceback.print_exc(file=sys.stdout)
+    sys.exit(1)
  
 #   Conversion coefficients from SHT15 datasheet
 D1 = -40.0  # for 14 Bit @ 5V
@@ -52,13 +52,10 @@ T2 =  0.00008   # for 14 Bit @ 5V
 
 
 class Sht1x(object):
-    GPIO_BOARD = GPIO.BOARD
-    GPIO_BCM = GPIO.BCM
 
-    def __init__(self, dataPin, sckPin, gpioMode = GPIO_BOARD):
+    def __init__(self, dataPin, sckPin):
         self.dataPin = dataPin
         self.sckPin = sckPin
-        self.gpioMode = gpioMode
 
 #    I deliberately will not implement read_temperature_F because I believe in the
 #    in the Metric System (http://en.wikipedia.org/wiki/Metric_system)
@@ -106,7 +103,6 @@ class Sht1x(object):
 
     def __sendCommand(self, command):
         #Transmission start
-        GPIO.setmode(self.gpioMode)
         GPIO.setup(self.dataPin, GPIO.OUT)
         GPIO.setup(self.sckPin, GPIO.OUT)
                 

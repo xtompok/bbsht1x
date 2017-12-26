@@ -3,18 +3,18 @@ rpiSht1x
 This module reads Humidity and Temperature from a Sensirion SHT1x sensor. It has been tested
 both with an SHT11 and an SHT15.
 
-It is meant to be used in a Raspberry Pi and depends on this module (http://pypi.python.org/pypi/RPi.GPIO/0.4.1a).
+It is meant to be used in a BeagleBone (Black) and depends on this module (https://github.com/adafruit/adafruit-beaglebone-io-python).
 
-The module raspberry-gpio-python requires root privileges, therefore, to run this module you need to run your script as root.
+The module Adafruit_BBIO.GPIO requires root privileges, therefore, to run this module you need to run your script as root.
 
-This a Python/Raspberry Pi port of this library: https://github.com/practicalarduino/SHT1x
+This a modified Python/BeagleBone port of (https://bitbucket.org/lunobili/rpisht1x.git) which is port of this library: https://github.com/practicalarduino/SHT1x.
 
 Example Usage::
 
     from sht1x.Sht1x import Sht1x as SHT1x
     dataPin = 11
     clkPin = 7
-    sht1x = SHT1x(dataPin, clkPin, SHT1x.GPIO_BOARD)
+    sht1x = SHT1x(dataPin, clkPin)
     
     temperature = sht1x.read_temperature_C()
     humidity = sht1x.read_humidity()
