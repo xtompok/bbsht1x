@@ -11,5 +11,5 @@ setup(
     long_description = open('README.txt').read(),
     keywords = "BeagleBone Black SHT15 SHT11 SHT1x Humidity Temperature GPIO",
     url = "",
-    install_requires = "Adafruit_BBIO.GPIO>=1.0.0",
+    install_requires = "Adafruit_BBIO>=1.0.0",
 )
